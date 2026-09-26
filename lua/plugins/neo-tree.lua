@@ -80,6 +80,8 @@ end
 
 return {
   "nvim-neo-tree/neo-tree.nvim",
+  -- track main until a release ships 162f9b9 (E95 on stale-tab render)
+  version = false,
   specs = {
     {
       "AstroNvim/astrocore",
