@@ -116,6 +116,11 @@ return {
     opts.filesystem = fs
     fs.bind_to_cwd = true
     fs.follow_current_file = { enabled = true }
+    -- always show dotfiles and gitignored files; `H` still toggles per session
+    fs.filtered_items = vim.tbl_deep_extend("force", fs.filtered_items or {}, {
+      hide_dotfiles = false,
+      hide_gitignored = false,
+    })
 
     fs.components = fs.components or {}
     fs.components.name = name_with_git_flags

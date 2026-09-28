@@ -200,6 +200,11 @@ return {
     opts.filesystem = fs
     fs.bind_to_cwd = true
     fs.follow_current_file = { enabled = true }
+    -- always show dotfiles and gitignored files; `H` still toggles per session
+    fs.filtered_items = vim.tbl_deep_extend("force", fs.filtered_items or {}, {
+      hide_dotfiles = false,
+      hide_gitignored = false,
+    })
 
     fs.components = fs.components or {}
     fs.components.name = name_with_git_flags
@@ -498,6 +503,7 @@ codetime.dev gotchas:
 | `VimEnter` autocmd `cd_to_dir_arg` | `nvim <dir>` sets cwd to `<dir>`; also fixes pickers/grep root |
 | `bind_to_cwd = true` | Tree root and `:cd` stay in sync both ways |
 | `follow_current_file` | Tree highlights the file you switch to |
+| `filtered_items` | Dotfiles and gitignored files always shown (`H` toggles) |
 | `components.name = name_with_git_flags` | Appends `*+$%` + color to repo/worktree root folders |
 | autocmd `neotree_repo_git_flags` + `git_event` handler | Refresh flags after focus/save/terminal/git changes |
 
