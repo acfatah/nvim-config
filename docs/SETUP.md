@@ -416,33 +416,32 @@ Git tools gotchas:
 - Plugin version pinned in `lazy-lock.json`; copy that file too for an
   identical setup, `:Lazy update` to bump.
 
-## Coding time
+## Coding time (codetime.dev)
 
-Tracks time spent coding per day with
-[acfatah/codetime.nvim](https://github.com/acfatah/codetime.nvim), a fork
-of rmarinn/codetime.nvim (multi-instance safe saving, midnight rollover,
-options, statusline API). Local only; nothing leaves the machine.
+Sends Neovim activity to https://codetime.dev (same dashboard as the
+VS Code / Zed extensions) with
+[acfatah/codetime-dev.nvim](https://github.com/acfatah/codetime-dev.nvim),
+and shows **today's dashboard minutes** (all editors and machines) in the
+statusline.
 
-Create `~/.config/nvim/lua/plugins/codetime.lua`:
+Create `~/.config/nvim/lua/plugins/codetime-dev.lua`:
 
 ```lua
+-- token: $CODETIME_TOKEN or ~/.codetime/config.json (codetime-cli), never put it here
 return {
   {
-    "acfatah/codetime.nvim",
+    "acfatah/codetime-dev.nvim",
     event = "VeryLazy",
-    dependencies = { "nvim-lua/plenary.nvim" },
     opts = {},
   },
   {
     "rebelot/heirline.nvim",
     opts = function(_, opts)
       -- AstroNvim v6 statusline tail: fill, lsp, virtual_env, treesitter, nav, mode
-      -- codetime.dev dashboard total (all editors/machines), local codetime.nvim total as fallback
       table.insert(opts.statusline, #opts.statusline - 4, {
-        condition = function() return package.loaded.codetime_dev ~= nil or package.loaded.codetime ~= nil end,
+        condition = function() return package.loaded.codetime_dev ~= nil end,
         provider = function()
-          local text = package.loaded.codetime_dev and require("codetime_dev").format_today()
-          if not text and package.loaded.codetime then text = require("codetime").format_today() end
+          local text = require("codetime_dev").format_today()
           return text and ("󱑎 " .. text .. " ") or ""
         end,
       })
@@ -452,55 +451,6 @@ return {
       timer:start(60000, 60000, vim.schedule_wrap(function() vim.cmd.redrawstatus() end))
     end,
   },
-}
-```
-
-Restart Neovim; lazy.nvim installs it. The statusline shows `󱑎 1h 23m`
-(before the LSP section); `:CodeTime` prints `Total coding time today:
-01:23:00`.
-
-Options (`opts = { ... }`, defaults shown):
-
-| Option | Default | Meaning |
-|---|---|---|
-| `idle_timeout` | `1000` | ms without activity that ends a counted burst |
-| `write_interval` | `300000` | ms between saves (also saved on exit) |
-| `track` | `{ "insert" }` | add `"normal"` to count cursor moves and normal-mode edits |
-
-Data file: `~/.local/share/nvim/codetime/data.json` (`{ "09/25/26": 4980 }`,
-seconds per day). Copy it to keep history on the other laptop.
-
-Coding time gotchas:
-
-- Only activity counts: by default typing in insert mode. Reading code
-  or navigating adds nothing unless `track = { "insert", "normal" }`.
-- Several Neovim instances add up on disk, but one instance's statusline
-  shows the others' time only after its next save (≤5 min).
-- `VeryLazy` loads it after startup; the statusline item appears once
-  loaded.
-- The statusline insert position assumes AstroNvim v6's layout
-  (`#opts.statusline - 4`); recheck after a major AstroNvim upgrade.
-- A `data.json` that fails to parse is never overwritten; time is not
-  saved until it is fixed or removed.
-- Day keys use the locale's `%x` date format; keep the same locale on
-  both laptops if you merge the files.
-
-## codetime.dev dashboard
-
-Sends Neovim activity to https://codetime.dev (same dashboard as the
-VS Code / Zed extensions) with
-[acfatah/codetime-dev.nvim](https://github.com/acfatah/codetime-dev.nvim).
-The statusline item above then shows **today's dashboard minutes** (all
-editors and machines), falling back to the local codetime.nvim total.
-
-Create `~/.config/nvim/lua/plugins/codetime-dev.lua`:
-
-```lua
--- token: $CODETIME_TOKEN or ~/.codetime/config.json (codetime-cli), never put it here
-return {
-  "acfatah/codetime-dev.nvim",
-  event = "VeryLazy",
-  opts = {},
 }
 ```
 
@@ -514,7 +464,8 @@ Token (never put it in the config or dotfiles), first match wins:
    codetime token set <token>   # from codetime.dev/dashboard/settings
    ```
 
-Requires `curl`. Restart Neovim; lazy.nvim installs it.
+Requires `curl`. Restart Neovim; lazy.nvim installs it. The statusline
+shows `󱑎 1h 23m` (before the LSP section).
 
 | Command | Action |
 |---|---|
@@ -530,15 +481,15 @@ codetime.dev gotchas:
 
 - Absolute paths include your username and git remote URLs; both leave
   the machine.
-- Dashboard minutes are computed by codetime.dev and will not match the
-  local codetime.nvim total.
 - Offline: events queue in memory (max 500) and retry every minute;
   they are lost if Neovim exits first.
 - A rejected token pauses sending with one warning; fix it, then
   `:CodeTimeDevReload`.
 - `~/.codetime/config.json` is a secret: do not commit it to dotfiles.
-- The statusline shows the local total until the first dashboard fetch
-  (a few seconds after startup).
+- The statusline item is empty until the first dashboard fetch (a few
+  seconds after startup) and while offline with no data yet.
+- The statusline insert position assumes AstroNvim v6's layout
+  (`#opts.statusline - 4`); recheck after a major AstroNvim upgrade.
 
 ## What each piece does
 

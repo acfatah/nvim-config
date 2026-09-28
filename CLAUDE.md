@@ -53,8 +53,7 @@ line is removed. Active custom files:
 |---|---|
 | `plugins/neo-tree.lua` | cd into `nvim <dir>` arg; `__git_ps1` flags on repo roots; tracks neo-tree `main` |
 | `plugins/diffview.lua` | diffview.nvim + `<Leader>gD/gh/gH/gm` |
-| `plugins/codetime.lua` | local time tracker (acfatah fork) + heirline statusline item |
-| `plugins/codetime-dev.lua` | codetime.dev dashboard client (acfatah) |
+| `plugins/codetime-dev.lua` | codetime.dev dashboard client (acfatah) + heirline statusline item |
 
 **Extending AstroNvim, not replacing it.** Keymaps and autocmds go through
 an `AstroNvim/astrocore` entry in the plugin's `specs` (`opts.mappings`,
@@ -68,11 +67,10 @@ statusline).
 
 **Cross-file couplings:**
 
-- Statusline item (`plugins/codetime.lua`) is inserted at
+- Statusline item (`plugins/codetime-dev.lua`) is inserted at
   `#opts.statusline - 4`, which assumes AstroNvim v6's tail
-  `fill, lsp, virtual_env, treesitter, nav, mode`. It prefers
-  `codetime_dev.format_today()` (dashboard) and falls back to
-  `codetime.format_today()` (local).
+  `fill, lsp, virtual_env, treesitter, nav, mode`. It shows
+  `codetime_dev.format_today()`, empty until the first dashboard fetch.
 - Neo-tree repo-root flags wrap the filesystem `name` component
   (`opts.filesystem.components.name`); flags are a single chunk because
   neo-tree's container pads a space between adjacent chunks. Neo-tree's
@@ -83,8 +81,7 @@ statusline).
 - Heirline's winbar is free for unlisted buffers, but Neo-tree's winbar is
   taken by its source selector tabs.
 
-**Owned plugins** (edit upstream, not here): `acfatah/codetime.nvim`
-(`~/personal/codetime.nvim`) and `acfatah/codetime-dev.nvim`
+**Owned plugin** (edit upstream, not here): `acfatah/codetime-dev.nvim`
 (`~/personal/codetime-dev.nvim`). The codetime.dev token lives in
 `~/.codetime/config.json` or `$CODETIME_TOKEN`, never in this repo.
 
