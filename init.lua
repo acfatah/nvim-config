@@ -26,8 +26,10 @@ end
 require "lazy_setup"
 require "polish"
 
--- Define a custom command :PreviewMarkdown
-vim.api.nvim_create_user_command('Glow', function()
-  vim.cmd('vsplit | terminal glow %')
-end, {})
+-- Define a custom command :Glow [file] (defaults to the current file)
+vim.api.nvim_create_user_command('Glow', function(args)
+  local file = args.args ~= '' and args.args or vim.fn.expand('%:p')
+  if file == '' then return end
+  require('snacks').terminal({ 'glow', '-p', vim.fn.fnamemodify(file, ':p') })
+end, { nargs = '?', complete = 'file' })
 

@@ -131,5 +131,15 @@ return {
       event = "git_event",
       handler = refresh_all_git_summaries,
     })
+
+    -- `M`: preview the file under the cursor with :Glow (init.lua)
+    opts.commands = opts.commands or {}
+    opts.commands.glow = function(state)
+      local node = state.tree:get_node()
+      if node.type == "file" then vim.cmd.Glow(node.path) end
+    end
+    opts.window = opts.window or {}
+    opts.window.mappings = opts.window.mappings or {}
+    opts.window.mappings["M"] = "glow"
   end,
 }
