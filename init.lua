@@ -30,12 +30,8 @@ require "polish"
 vim.api.nvim_create_user_command('Glow', function(args)
   local file = args.args ~= '' and args.args or vim.fn.expand('%:p')
   if file == '' then return end
-  local cmd = { 'glow', '-p' }
-  -- optional custom style; machines without it get glow's default
-  local style = vim.fn.expand('~/glow-style.json')
-  if vim.fn.filereadable(style) == 1 then vim.list_extend(cmd, { '-s', style }) end
-  table.insert(cmd, vim.fn.fnamemodify(file, ':p'))
-  require('snacks').terminal(cmd)
+  local style = vim.fn.stdpath('config') .. '/glow-style.json'
+  require('snacks').terminal({ 'glow', '-p', '-s', style, vim.fn.fnamemodify(file, ':p') })
 end, { nargs = '?', complete = 'file' })
 
 -- Define a custom command :Lazygit
