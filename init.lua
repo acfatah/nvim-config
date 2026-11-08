@@ -30,6 +30,11 @@ require "polish"
 vim.api.nvim_create_user_command('Glow', function(args)
   local file = args.args ~= '' and args.args or vim.fn.expand('%:p')
   if file == '' then return end
-  require('snacks').terminal({ 'glow', '-p', vim.fn.fnamemodify(file, ':p') })
+  require('snacks').terminal({ 'glow', '-p', '-s', '/home/achmad/glow-style.json', vim.fn.fnamemodify(file, ':p') })
 end, { nargs = '?', complete = 'file' })
+
+-- Define a custom command :Lazygit
+vim.api.nvim_create_user_command('Lazygit', function()
+  vim.cmd('terminal lazygit')
+end, {})
 
