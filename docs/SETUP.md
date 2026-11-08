@@ -496,6 +496,54 @@ codetime.dev gotchas:
 - The statusline insert position assumes AstroNvim v6's layout
   (`#opts.statusline - 4`); recheck after a major AstroNvim upgrade.
 
+## Tag editing (HTML, Vue)
+
+VS Code-style pair-tag editing: rename an opening tag and the closing tag
+follows; type `>` and the closing tag appears. AstroNvim already bundles
+[windwp/nvim-ts-autotag](https://github.com/windwp/nvim-ts-autotag) for
+this (loaded on `User AstroFile`), and it aliases `vue` to its `html`
+rules, so Vue `<template>` blocks work too. It only acts when the
+buffer's Treesitter parser exists; without the `html` parser it silently
+does nothing until `auto_install` fetches it. So pin the parsers.
+
+Create `~/.config/nvim/lua/plugins/tag-editing.lua`:
+
+```lua
+-- Pair-tag editing (HTML, Vue, JSX/TSX): nvim-ts-autotag ships with
+-- AstroNvim and renames/closes tags; it needs the Treesitter parser of
+-- the buffer's language, so pin the ones it uses here.
+---@type LazySpec
+return {
+  "AstroNvim/astrocore",
+  ---@type AstroCoreOpts
+  opts = {
+    treesitter = {
+      ensure_installed = { "html", "vue", "css", "javascript", "typescript", "tsx" },
+    },
+  },
+}
+```
+
+AstroCore declares `opts_extend = { "treesitter.ensure_installed" }`, so
+this list is appended to AstroNvim's defaults, not a replacement. Restart
+Neovim; missing parsers install on startup.
+
+Usage:
+
+- **Rename:** change the opening or closing tag name in insert mode (for
+  example `ciw` on `div`, type `section`, `<Esc>`); the other tag follows.
+- **Auto-close:** type `<div>` and get `<div></div>`, cursor inside.
+- **Debug:** `:checkhealth nvim-treesitter` lists installed parsers;
+  `:checkhealth nvim-ts-autotag` and `:InspectTree` show whether the
+  buffer parses.
+
+Tag editing gotchas:
+
+- Normal-mode edits that never enter insert mode (`r`, `x`) do not sync
+  the pair.
+- A parse error near the tag (unclosed attribute quote, stray `<`) breaks
+  pairing until it is fixed.
+
 ## What each piece does
 
 | Piece | Effect |
@@ -506,6 +554,7 @@ codetime.dev gotchas:
 | `filtered_items` | Dotfiles and gitignored files always shown (`H` toggles) |
 | `components.name = name_with_git_flags` | Appends `*+$%` + color to repo/worktree root folders |
 | autocmd `neotree_repo_git_flags` + `git_event` handler | Refresh flags after focus/save/terminal/git changes |
+| `tag-editing.lua` parser pin | nvim-ts-autotag renames and closes tags in HTML, Vue, JSX/TSX |
 
 ## Gotchas
 
