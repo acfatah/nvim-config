@@ -544,6 +544,77 @@ Tag editing gotchas:
 - A parse error near the tag (unclosed attribute quote, stray `<`) breaks
   pairing until it is fixed.
 
+## Sessions: restore terminals
+
+AstroNvim bundles
+[stevearc/resession.nvim](https://github.com/stevearc/resession.nvim)
+(`<Leader>S` keys; autosaves `Last Session` and a per-cwd dirsession on
+exit), but a restored session drops toggleterm terminals. A small
+resession extension saves them and reopens the ones that were open.
+
+Create `~/.config/nvim/lua/plugins/resession.lua`:
+
+```lua
+---@type LazySpec
+return {
+  "stevearc/resession.nvim",
+  opts = { extensions = { terminals = {} } },
+}
+```
+
+Create `~/.config/nvim/lua/resession/extensions/terminals.lua` (resession
+loads extension `terminals` from `resession.extensions.terminals` on the
+runtimepath):
+
+```lua
+-- Save toggleterm terminals (cmd, cwd, layout); reopen them on load
+local M = {}
+
+M.on_save = function()
+  local ok, tt = pcall(require, "toggleterm.terminal")
+  if not ok then return {} end
+  local out = {}
+  for _, t in ipairs(tt.get_all(true)) do -- true = include hidden
+    table.insert(out, {
+      cmd = t.cmd,
+      dir = t.dir, -- cwd the term was spawned in
+      direction = t.direction,
+      open = t:is_open(),
+    })
+  end
+  return out
+end
+
+M.on_post_load = function(data)
+  vim.schedule(function() -- wait until windows/buffers are restored
+    for _, t in ipairs(data or {}) do
+      if t.open then
+        require("astrocore").toggle_term_cmd {
+          cmd = t.cmd,
+          dir = t.dir,
+          direction = t.direction,
+        }
+      end
+    end
+  end)
+end
+
+return M
+```
+
+Usage: save with `<Leader>Ss` (or just quit; autosave runs on exit),
+restore with `<Leader>Sl` (last session) or `<Leader>S.` (this cwd). Each
+terminal that was open comes back with its command, directory and layout
+(float, horizontal, vertical).
+
+Session gotchas:
+
+- **Commands restart.** A terminal reopens by running its command again
+  in a new shell; scrollback and the running process are not restored.
+- **Hidden terminals** are saved but only reopened if they were open at
+  save time.
+- **Plain shells** (no command) come back as a default shell terminal.
+
 ## What each piece does
 
 | Piece | Effect |
@@ -555,6 +626,7 @@ Tag editing gotchas:
 | `components.name = name_with_git_flags` | Appends `*+$%` + color to repo/worktree root folders |
 | autocmd `neotree_repo_git_flags` + `git_event` handler | Refresh flags after focus/save/terminal/git changes |
 | `tag-editing.lua` parser pin | nvim-ts-autotag renames and closes tags in HTML, Vue, JSX/TSX |
+| `resession.lua` + `extensions/terminals.lua` | Sessions save and reopen toggleterm terminals |
 
 ## Gotchas
 
