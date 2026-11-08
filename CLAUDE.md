@@ -4,7 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
 Personal AstroNvim v6 config (`~/.config/nvim`), plugins managed by
-lazy.nvim. `docs/SETUP.md` is the human setup guide for other machines.
+lazy.nvim. Remote: https://github.com/acfatah/nvim-config (`origin`).
+`docs/SETUP.md` is the human setup guide for other machines.
 
 ## Commands
 
