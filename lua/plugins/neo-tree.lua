@@ -141,5 +141,9 @@ return {
     opts.window = opts.window or {}
     opts.window.mappings = opts.window.mappings or {}
     opts.window.mappings["M"] = "glow"
+    -- free Space for <Leader>: neo-tree's default is spelled "<space>", so
+    -- AstroNvim's `["<Space>"] = false` misses it and toggle_node shadows leader
+    opts.window.mappings["<Space>"] = nil
+    opts.window.mappings["<space>"] = "none"
   end,
 }
