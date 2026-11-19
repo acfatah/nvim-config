@@ -215,6 +215,13 @@ return {
       event = "git_event",
       handler = refresh_all_git_summaries,
     })
+
+    -- free Space for <Leader>: neo-tree's default is spelled "<space>", so
+    -- AstroNvim's `["<Space>"] = false` misses it and toggle_node shadows leader
+    opts.window = opts.window or {}
+    opts.window.mappings = opts.window.mappings or {}
+    opts.window.mappings["<Space>"] = nil
+    opts.window.mappings["<space>"] = "none"
   end,
 }
 ```
@@ -615,6 +622,28 @@ Session gotchas:
   save time.
 - **Plain shells** (no command) come back as a default shell terminal.
 
+## Terminals: float by default
+
+AstroNvim's toggleterm opens plain terminals (`<F7>`, `<C-'>`,
+`<Leader>tn`, `<Leader>tp`) as a horizontal split. Make float the default
+direction.
+
+Create `~/.config/nvim/lua/plugins/toggleterm.lua`:
+
+```lua
+-- Open terminals floating by default (toggleterm's default is horizontal).
+-- Explicit directions (<Leader>th / <Leader>tv, neo-tree Th / Tv) still win.
+---@type LazySpec
+return {
+  "akinsho/toggleterm.nvim",
+  opts = { direction = "float" },
+}
+```
+
+Terminals that pass their own direction keep it: `<Leader>th` and
+`<Leader>tv` still split, and a restored session reopens each terminal in
+the layout it was saved with.
+
 ## What each piece does
 
 | Piece | Effect |
@@ -627,6 +656,7 @@ Session gotchas:
 | autocmd `neotree_repo_git_flags` + `git_event` handler | Refresh flags after focus/save/terminal/git changes |
 | `tag-editing.lua` parser pin | nvim-ts-autotag renames and closes tags in HTML, Vue, JSX/TSX |
 | `resession.lua` + `extensions/terminals.lua` | Sessions save and reopen toggleterm terminals |
+| `toggleterm.lua` `direction = "float"` | Plain terminals open floating instead of a horizontal split |
 
 ## Gotchas
 

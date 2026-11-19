@@ -5,7 +5,10 @@ code in this repository.
 
 Personal AstroNvim v6 config (`~/.config/nvim`), plugins managed by
 lazy.nvim. Remote: https://github.com/acfatah/nvim-config (`origin`).
-`docs/SETUP.md` is the human setup guide for other machines.
+`README.md` has the install steps (back up old nvim dirs, clone, start
+`nvim`); there is no separate AstroNvim install, because lazy.nvim fetches
+AstroNvim on first start. `docs/SETUP.md` is the human setup guide for
+other machines.
 
 ## Commands
 
@@ -55,6 +58,7 @@ line is removed. Active custom files:
 | `plugins/neo-tree.lua` | cd into `nvim <dir>` arg; `__git_ps1` flags on repo roots; tracks neo-tree `main` |
 | `plugins/diffview.lua` | diffview.nvim + `<Leader>gD/gh/gH/gm` |
 | `plugins/codetime-dev.lua` | codetime.dev dashboard client (acfatah) + heirline statusline item |
+| `plugins/toggleterm.lua` | terminals open floating by default (`direction = "float"`) |
 
 **Extending AstroNvim, not replacing it.** Keymaps and autocmds go through
 an `AstroNvim/astrocore` entry in the plugin's `specs` (`opts.mappings`,
@@ -81,6 +85,13 @@ statusline).
   `162f9b9` (E95 stale-tab render fix); remove it then.
 - Heirline's winbar is free for unlisted buffers, but Neo-tree's winbar is
   taken by its source selector tabs.
+- `glow-style.json` (repo root) is the style for the `:Glow [file]`
+  command in `init.lua`, which runs `glow -p -s <stdpath("config")>/...`
+  in a snacks terminal; neo-tree's `M` mapping calls it on the file under
+  the cursor. It needs the `glow` binary on `PATH`. The file is also the
+  reference for the user's global Claude chat heading style (h2 `█ ` plus
+  a 75-char `─` rule, h3 `▌ `), so keep both in step when changing
+  heading prefixes or suffixes.
 
 **Owned plugin** (edit upstream, not here): `acfatah/codetime-dev.nvim`
 (`~/personal/codetime-dev.nvim`). The codetime.dev token lives in
