@@ -58,6 +58,7 @@ line is removed. Active custom files:
 | `plugins/neo-tree.lua` | cd into `nvim <dir>` arg; `__git_ps1` flags on repo roots; tracks neo-tree `main` |
 | `plugins/diffview.lua` | diffview.nvim + `<Leader>gD/gh/gH/gm` |
 | `plugins/codetime-dev.lua` | codetime.dev dashboard client (acfatah) + heirline statusline item |
+| `plugins/toggleterm.lua` | terminals open floating by default (`direction = "float"`) |
 
 **Extending AstroNvim, not replacing it.** Keymaps and autocmds go through
 an `AstroNvim/astrocore` entry in the plugin's `specs` (`opts.mappings`,
