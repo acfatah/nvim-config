@@ -59,6 +59,7 @@ line is removed. Active custom files:
 | `plugins/diffview.lua` | diffview.nvim + `<Leader>gD/gh/gH/gm` |
 | `plugins/codetime-dev.lua` | codetime.dev dashboard client (acfatah) + heirline statusline item |
 | `plugins/toggleterm.lua` | terminals open floating by default (`direction = "float"`) |
+| `plugins/marks.lua` | swaps `'` and `` ` `` (n/x/o): `'` jumps to the exact mark position |
 
 **Extending AstroNvim, not replacing it.** Keymaps and autocmds go through
 an `AstroNvim/astrocore` entry in the plugin's `specs` (`opts.mappings`,
