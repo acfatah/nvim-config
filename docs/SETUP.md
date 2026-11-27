@@ -644,6 +644,40 @@ Terminals that pass their own direction keep it: `<Leader>th` and
 `<Leader>tv` still split, and a restored session reopens each terminal in
 the layout it was saved with.
 
+## Marks: swap ' and `
+
+Vim has two mark jumps: `` `a `` goes to the exact line and column of
+mark `a`, and `'a` goes to the first non-blank of its line. The exact jump
+is the more useful one, so put it on the easier key.
+
+Create `~/.config/nvim/lua/plugins/marks.lua`:
+
+```lua
+-- Swap ' and ` for marks: ' jumps to the exact line and column (Vim's `),
+-- and ` jumps to the first non-blank of the line (Vim's ').
+-- The exact jump is the more useful one, and ' is easier to reach.
+local swap = {
+  ["'"] = { "`", desc = "Jump to mark (exact position)" },
+  ["`"] = { "'", desc = "Jump to mark (line)" },
+}
+
+---@type LazySpec
+return {
+  "AstroNvim/astrocore",
+  ---@type AstroCoreOpts
+  opts = {
+    mappings = {
+      n = swap,
+      x = swap,
+      o = swap,
+    },
+  },
+}
+```
+
+The swap covers normal, visual and operator-pending mode, so `d'a` deletes
+up to the exact mark position and ``d`a`` deletes whole lines.
+
 ## What each piece does
 
 | Piece | Effect |
@@ -657,6 +691,7 @@ the layout it was saved with.
 | `tag-editing.lua` parser pin | nvim-ts-autotag renames and closes tags in HTML, Vue, JSX/TSX |
 | `resession.lua` + `extensions/terminals.lua` | Sessions save and reopen toggleterm terminals |
 | `toggleterm.lua` `direction = "float"` | Plain terminals open floating instead of a horizontal split |
+| `marks.lua` swap | `'` jumps to the exact mark position, `` ` `` to the line |
 
 ## Gotchas
 
